@@ -1,0 +1,8 @@
+# Local-only paper source (reference material, never published)
+Multi_Turn_Reflective_Masking_Elicits_Reasoning_in_Mask_Diffusion_Models/
+
+# Local-only guidance for Claude Code
+CLAUDE.md
+
+# macOS
+.DS_Store

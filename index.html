@@ -1,5 +1,712 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><title>My Page</title></head>
-<body><h1>Hello GitHub Pages</h1></body>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multi-Turn Reflective Masking Elicits Reasoning in Mask Diffusion Models</title>
+<meta name="description" content="Reflective Masking (RM) elicits intrinsic multi-turn reasoning in mask diffusion models via lightweight post-training, with a parameter-free History Reference mechanism. Strong gains across text, Sudoku, and image editing.">
+
+<!-- Open Graph / link previews -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Multi-Turn Reflective Masking Elicits Reasoning in Mask Diffusion Models">
+<meta property="og:description" content="Eliciting reasoning-through-revision in mask diffusion models via Reflective Masking and a parameter-free History Reference mechanism.">
+<meta property="og:image" content="static/images/method_overview.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+  :root{
+    --ink:#1a1a1a;
+    --muted:#5b6470;
+    --line:#e6e8eb;
+    --accent:#2257d6;
+    --accent-soft:#eaf0fd;
+    --good:#1a8f4a;
+    --bg:#ffffff;
+    --bg-soft:#f7f8fa;
+    --maxw:880px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    line-height:1.65;
+    font-size:17px;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* ---- top nav ---- */
+  nav{
+    position:sticky;top:0;z-index:10;
+    background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .inner{
+    max-width:var(--maxw);margin:0 auto;padding:11px 20px;
+    display:flex;gap:22px;justify-content:center;flex-wrap:wrap;
+    font-size:14.5px;font-weight:500;
+  }
+  nav a{color:var(--muted)}
+  nav a:hover{color:var(--accent);text-decoration:none}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+
+  /* ---- hero ---- */
+  header.hero{padding:62px 20px 30px;text-align:center}
+  header.hero h1{
+    max-width:820px;margin:0 auto 18px;
+    font-size:38px;line-height:1.18;font-weight:750;letter-spacing:-.02em;
+  }
+  .venue{
+    display:inline-block;margin-bottom:18px;font-size:14px;font-weight:600;
+    color:var(--accent);background:var(--accent-soft);
+    padding:5px 13px;border-radius:999px;letter-spacing:.01em;
+  }
+  .authors{font-size:18px;color:var(--ink);margin:6px 0 2px;font-weight:600}
+  .affil{font-size:15px;color:var(--muted);margin:0 0 24px}
+
+  /* ---- buttons ---- */
+  .links{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:9px 18px;border-radius:999px;font-size:15px;font-weight:600;
+    background:#1a1a1a;color:#fff;border:1px solid #1a1a1a;
+    font-family:inherit;cursor:pointer;
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn:hover{text-decoration:none;transform:translateY(-1px)}
+  .btn .ico{font-size:15px;line-height:1}
+  .btn.alt{background:#fff;color:var(--ink);border-color:var(--line)}
+  .btn.alt:hover{border-color:#c7ccd3}
+  .btn.copied{background:var(--good);border-color:var(--good);color:#fff}
+
+  /* ---- sections ---- */
+  section{padding:34px 0}
+  .eyebrow{
+    text-align:center;text-transform:uppercase;letter-spacing:.14em;
+    font-size:13px;font-weight:700;color:var(--accent);margin:0 0 6px;
+  }
+  h2{text-align:center;font-size:27px;font-weight:720;letter-spacing:-.01em;margin:0 0 22px}
+  h3{font-size:19px;font-weight:680;margin:30px 0 8px}
+  p{margin:0 0 16px}
+  .lead{font-size:17.5px}
+
+  .abstract{
+    background:var(--bg-soft);border:1px solid var(--line);border-radius:14px;
+    padding:24px 26px;
+  }
+  .abstract p{margin:0;text-align:justify}
+
+  /* ---- TL;DR highlight ---- */
+  .tldr{
+    border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:18px 22px;background:#fff;
+  }
+  .tldr strong{color:var(--accent)}
+
+  /* ---- contributions ---- */
+  ul.contrib{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:14px}
+  ul.contrib li{
+    position:relative;padding:16px 18px 16px 52px;
+    border:1px solid var(--line);border-radius:12px;background:#fff;
+  }
+  ul.contrib li .n{
+    position:absolute;left:16px;top:16px;
+    width:26px;height:26px;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:14px;font-weight:700;display:grid;place-items:center;
+  }
+  ul.contrib li b{font-weight:680}
+
+  /* ---- figures ---- */
+  figure{margin:22px 0;text-align:center}
+  figure img{
+    max-width:100%;height:auto;border:1px solid var(--line);
+    border-radius:10px;background:#fff;
+  }
+  figure.plain img{border:none}
+  figcaption{font-size:14.5px;color:var(--muted);margin-top:11px;text-align:left;line-height:1.55}
+  figcaption b{color:var(--ink)}
+
+  .pillrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:4px 0 8px}
+  .pill{font-size:13.5px;font-weight:600;color:var(--muted);background:var(--bg-soft);
+    border:1px solid var(--line);border-radius:999px;padding:5px 13px}
+
+  /* ---- result tables ---- */
+  .table-wrap{overflow-x:auto;margin:16px 0 4px}
+  table.rt{border-collapse:collapse;width:100%;min-width:540px;font-size:14.5px}
+  table.rt thead th{
+    font-weight:700;padding:9px 12px;border-bottom:2px solid #cdd2d9;
+    white-space:nowrap;vertical-align:bottom;
+  }
+  table.rt tbody td{padding:9px 12px;border-bottom:1px solid var(--line)}
+  table.rt tbody tr:last-child td{border-bottom:2px solid #cdd2d9}
+  table.rt th:first-child,table.rt td:first-child{text-align:left}
+  table.rt th:not(:first-child),table.rt td:not(:first-child){text-align:center}
+  table.rt tr.ours{background:var(--accent-soft)}
+  table.rt tr.ours td:first-child{font-weight:700}
+  table.rt .arr{color:var(--muted);font-weight:600;font-size:12px}
+  table.rt .best{font-weight:700}
+  table.rt .d{margin-left:5px;font-size:12px;font-weight:600;color:var(--good);white-space:nowrap}
+  table.rt .cat{color:var(--muted);font-size:12.5px;font-weight:500}
+  .tnote{font-size:13.5px;color:var(--muted);margin:8px 0 0}
+
+  /* ---- sudoku animated figure ---- */
+  figure.sudoku-fig{margin:22px 0}
+  .sk-card{border:1px solid var(--line);border-radius:16px;background:var(--bg-soft);padding:22px 20px}
+  .sk-tabs{display:flex;gap:6px;justify-content:center;margin-bottom:16px}
+  .sk-tab{font:inherit;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--line);
+    background:#fff;color:var(--muted);border-radius:999px;padding:5px 15px;transition:all .15s}
+  .sk-tab:hover{border-color:#c7ccd3}
+  .sk-tab.on{background:var(--accent-soft);color:var(--accent);border-color:#cdddfb}
+  .sk-top{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .sk-step{font-size:14px;font-weight:700;color:var(--ink)}
+  .sk-tag{font-size:12.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);
+    border-radius:999px;padding:4px 12px}
+  .sk-tag.done{color:var(--good);background:#e8f7ee}
+  .board{display:grid;grid-template-columns:repeat(9,1fr);width:min(360px,86vw);margin:0 auto;
+    border:2px solid #2b2f36;border-radius:8px;overflow:hidden;background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .sc{aspect-ratio:1/1;display:grid;place-items:center;font-weight:600;
+    font-size:clamp(13px,3.4vw,18px);color:#2b2f36;
+    border-right:1px solid #e2e6ea;border-bottom:1px solid #e2e6ea;
+    transition:background-color .4s ease,color .25s ease}
+  .sc.br{border-right:2px solid #2b2f36}
+  .sc.bb{border-bottom:2px solid #2b2f36}
+  .sc.er{border-right:none}
+  .sc.eb{border-bottom:none}
+  .sc.wrong{background:#fdecea;color:#c0392b;font-weight:800}
+  .sc.mask{background:#fff4d6;color:transparent}
+  .sc.fix{animation:skflash 1s ease}
+  @keyframes skflash{0%{background:#bff0cf}35%{background:#d9f7e3}100%{background:#fff}}
+  .sk-meter{display:flex;gap:18px;justify-content:center;margin:16px 0 2px;font-size:13px;color:var(--muted)}
+  .sk-meter b{color:var(--ink)}
+  .sk-meter .err b{color:#c0392b}
+  .sk-meter .msk b{color:#b8860b}
+  .sk-dots{display:flex;gap:6px;justify-content:center;margin-top:12px}
+  .sk-dot{width:9px;height:9px;border-radius:50%;background:#d3d8df;cursor:pointer;
+    border:none;padding:0;transition:background .2s,transform .2s}
+  .sk-dot.on{background:var(--accent);transform:scale(1.3)}
+  .sk-ctrl{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .sk-btn{font:inherit;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--line);
+    background:#fff;color:var(--ink);border-radius:9px;padding:7px 14px;
+    transition:border-color .15s,background .15s}
+  .sk-btn:hover{border-color:#c7ccd3}
+  .sk-btn.primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+  .sk-legend{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:14px;
+    font-size:12.5px;color:var(--muted)}
+  .sk-legend span{display:inline-flex;align-items:center;gap:6px}
+  .sk-sw{width:13px;height:13px;border-radius:3px;border:1px solid var(--line);display:inline-block}
+  .sk-sw.w{background:#fdecea;border-color:#f3c4bd}
+  .sk-sw.m{background:#fff4d6;border-color:#ecd9a0}
+  .sk-sw.f{background:#d9f7e3;border-color:#bfe6cd}
+
+  /* ---- bibtex ---- */
+  pre{
+    background:#0f1115;color:#e8eaed;border-radius:12px;
+    padding:18px 20px;overflow:auto;font-size:14px;line-height:1.6;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+
+  footer{border-top:1px solid var(--line);padding:26px 20px 40px;text-align:center;
+    color:var(--muted);font-size:14px}
+
+  hr.sep{border:none;border-top:1px solid var(--line);margin:0}
+
+  @media (max-width:600px){
+    header.hero h1{font-size:29px}
+    body{font-size:16px}
+    h2{font-size:23px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="#abstract">Abstract</a>
+    <a href="#results">Results</a>
+    <a href="#method">Method</a>
+    <a href="#training">Training</a>
+    <a href="#bibtex">BibTeX</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="venue">NeurIPS 2026 &middot; Under double-blind review</div>
+  <h1>Multi-Turn Reflective Masking Elicits Reasoning in Mask Diffusion Models</h1>
+  <div class="authors">Anonymous Authors</div>
+  <div class="affil">Paper under double-blind review</div>
+
+  <!-- Resource links. Placeholders during double-blind review:
+       replace each href="#" with the real URL once available. -->
+  <div class="links">
+    <a class="btn alt" id="link-arxiv" href="#"><span class="ico">&#128196;</span> arXiv</a>
+    <a class="btn alt" id="link-code" href="https://github.com/zhangyanming-cs/RM" target="_blank" rel="noopener noreferrer"><span class="ico">&lt;/&gt;</span> Code</a>
+    <a class="btn alt" id="link-hf" href="#"><span class="ico">&#129303;</span> Hugging Face</a>
+    <button class="btn" id="cite-copy" type="button"><span class="ico">&#128203;</span> <span id="cite-label">Copy BibTeX</span></button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ======================= ABSTRACT ======================= -->
+  <section id="abstract">
+    <p class="eyebrow">Abstract</p>
+    <div class="abstract">
+      <p>
+        Autoregressive models can refine an answer only by regenerating forward &mdash; even a
+        one-token fix means redoing the whole sequence. <b>Mask Diffusion Models (MDMs)</b> can
+        instead edit <em>in place</em>, yet existing MDMs never exploit this for multi-turn revision.
+        We propose <b>Reflective Masking (RM)</b>, a lightweight post-training method that unlocks this
+        intrinsic ability: the model re-masks its own uncertain tokens and revises them across turns
+        &mdash; a native form of test-time scaling, with no architectural changes. We further add
+        <b>History Reference</b>, a parameter-free mechanism that carries the denoising trajectory
+        across revisions. Across text, Sudoku, and image editing, RM consistently beats standard
+        masking-based baselines, positioning it as a basic primitive for reasoning in MDMs.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================= TL;DR ======================= -->
+  <section id="tldr">
+    <div class="tldr">
+      <p style="margin:0">
+        <strong>TL;DR.</strong> Autoregressive models can only revise by regenerating forward;
+        mask diffusion models can edit <em>in place</em> &mdash; but standard decoding fixes a token
+        once it is revealed and forgets what it previously predicted. <b>Reflective Masking</b>
+        teaches an MDM to re-mask its own uncertain tokens and revise them over multiple turns, and
+        <b>History Reference</b> lets it carry the denoising trajectory forward &mdash; both with
+        <b>no architectural changes and no extra parameters</b>.
+      </p>
+    </div>
+
+    <ul class="contrib">
+      <li><span class="n">1</span><b>Reflective Masking as a latent capability.</b> We recast MDM
+        generation as self-initiated, in-place revision &mdash; reasoning by editing prior outputs,
+        not just expanding forward.</li>
+      <li><span class="n">2</span><b>A lightweight training paradigm.</b> A scalable offline data
+        pipeline activates RM as an intrinsic skill, with no architectural changes &mdash; validated
+        on text, Sudoku, and image editing.</li>
+      <li><span class="n">3</span><b>History Reference.</b> A parameter-free way to give MDMs a
+        stateful view of their denoising trajectory, improving consistency and avoiding repeated
+        errors.</li>
+    </ul>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ======================= RESULTS (now first) ======================= -->
+  <section id="results">
+    <p class="eyebrow">Results</p>
+    <h2>Reasoning through explicit revision</h2>
+    <div class="pillrow">
+      <span class="pill">Sudoku</span>
+      <span class="pill">Image editing</span>
+      <span class="pill">Text reasoning</span>
+    </div>
+    <p>
+      Three task families, from instruction-rich image editing to open-ended text reasoning.
+      Reflective Masking consistently beats masking-based baselines, and <b>History Reference</b>
+      helps most where the model must explore on its own &mdash; all trained in about
+      <b>5 hours on 2&times;H100</b>.
+    </p>
+
+    <!-- ---------- Sudoku ---------- -->
+    <h3>Sudoku &mdash; structured error correction</h3>
+    <p>
+      A tiny from-scratch MDM (0.81M params) recovers 9&times;9 boards with 4&ndash;20 corrupted cells
+      by iterative re-masking. <b>History Reference (HR)</b> sharply cuts repeated mistakes and rule
+      conflicts; adding <b>History Embedding Rotation (HER)</b> tops every metric.
+    </p>
+
+    <!-- Dynamic correction figure — animated from a real RM revision trajectory (steps 0–8). -->
+    <figure class="sudoku-fig">
+      <div class="sk-card">
+        <div class="sk-tabs" id="sk-tabs">
+          <button class="sk-tab on" type="button" data-ex="0">Example 1</button>
+          <button class="sk-tab" type="button" data-ex="1">Example 2</button>
+        </div>
+        <div class="sk-top">
+          <span class="sk-step" id="sk-step">Step 0 / 8</span>
+          <span class="sk-tag" id="sk-tag">initial &middot; corrupted</span>
+        </div>
+        <div class="board" id="sk-board" role="img" aria-label="Animated Sudoku revision trajectory"></div>
+        <div class="sk-meter">
+          <span class="err">Errors remaining: <b id="sk-err">19</b></span>
+          <span class="msk">Re-masked: <b id="sk-msk">0</b></span>
+        </div>
+        <div class="sk-dots" id="sk-dots"></div>
+        <div class="sk-ctrl">
+          <button class="sk-btn" id="sk-restart" type="button">&#8635; Restart</button>
+          <button class="sk-btn" id="sk-prev" type="button">&lsaquo; Prev</button>
+          <button class="sk-btn primary" id="sk-play" type="button">&#10074;&#10074; Pause</button>
+          <button class="sk-btn" id="sk-next" type="button">Next &rsaquo;</button>
+        </div>
+        <div class="sk-legend">
+          <span><i class="sk-sw w"></i> wrong digit</span>
+          <span><i class="sk-sw m"></i> re-masked</span>
+          <span><i class="sk-sw f"></i> just corrected</span>
+        </div>
+      </div>
+      <figcaption>
+        <b>Reflective masking on Sudoku.</b> Two real revision trajectories: the model re-masks cells it
+        is unsure about (amber) and re-predicts them, turning wrong digits (red) into the correct
+        solution until the board is valid &mdash; driving errors down to 0. Switch examples, press play,
+        or step through manually.
+      </figcaption>
+    </figure>
+    <script>
+    (function () {
+      // Each example is a real RM denoising trajectory; '.' = re-masked cell. Last board = solution.
+      var EX = [
+        [
+          "125986347687137298983778156778499561491251785855693924119317675468517939574469812",
+          "1259863476.713.2989.37..156......561.9.25178.85.6.3924.193..675.6851..395...69812",
+          "125986347647135298983722156732897561496251783851673924319.22675268517439574369812",
+          "12598634764713529898372215673289756149625178385167392431942.675268517439574369812",
+          "125986347647135298983722156732897561496251783851673924319428675268517439574369812",
+          "12598634764713529898372215673289.561496251783851673924319428675268517439574369812",
+          "125986347647135298983722156732894561496251783851673924319428675268517439574369812",
+          "1259863476471352989837.2156732894561496251783851673924319428675268517439574369812",
+          "125986347647135298983742156732894561496251783851673924319428675268517439574369812"
+        ],
+        [
+          "987245513131893234344517396738168942792775168618972375811621463269423637543781629",
+          "98724.5131..89.2.43.4517.9673.168942.92..51686189.23758.16..4.32694.3..7543781.29",
+          "98.2.451.15589623432451789673516894249237516861894237587162945326945388.543781629",
+          "986234517155896234324517896735168942492375168618942375871629453269453881543781629",
+          "986234517155896234324517896735168942492375168618942375871629453269453.81543781629",
+          "986234517155896234324517896735168942492375168618942375871629453269453781543781629",
+          "98623451715.896234324517896735168942492375168618942375871629453269453781543781629",
+          "986234517157896234324517896735168942492375168618942375871629453269453781543781629"
+        ]
+      ];
+      var board = document.getElementById('sk-board');
+      var elStep = document.getElementById('sk-step'), elTag = document.getElementById('sk-tag');
+      var elErr = document.getElementById('sk-err'), elMsk = document.getElementById('sk-msk');
+      var dots = document.getElementById('sk-dots'), playBtn = document.getElementById('sk-play');
+      var tabEls = document.querySelectorAll('#sk-tabs .sk-tab');
+      var cells = [], dotEls = [], B, SOL, N, cur = 0, idx = 0, playing = true, timer = null;
+
+      // Build the 81 cells once (with 3x3 box borders).
+      for (var i = 0; i < 81; i++) {
+        var c = document.createElement('div'), col = i % 9, row = (i / 9) | 0, cls = 'sc';
+        if (col === 2 || col === 5) cls += ' br'; if (col === 8) cls += ' er';
+        if (row === 2 || row === 5) cls += ' bb'; if (row === 8) cls += ' eb';
+        c.className = cls; board.appendChild(c); cells.push(c);
+      }
+
+      function paint(i) {
+        var b = B[i], prev = i > 0 ? B[i - 1] : null, errs = 0, masks = 0;
+        for (var k = 0; k < 81; k++) {
+          var ch = b[k], base = cells[k].className.replace(/ (wrong|mask|fix)/g, ''), isFix = false, txt = '';
+          if (ch === '.') { base += ' mask'; masks++; }
+          else if (ch !== SOL[k]) { base += ' wrong'; txt = ch; errs++; }
+          else { txt = ch; if (prev && prev[k] !== ch) isFix = true; } // newly correct -> flash
+          cells[k].className = base; cells[k].textContent = txt;
+          if (isFix) { void cells[k].offsetWidth; cells[k].classList.add('fix'); }
+        }
+        elStep.textContent = 'Step ' + i + ' / ' + (N - 1);
+        elErr.textContent = errs; elMsk.textContent = masks;
+        if (i === 0) { elTag.textContent = 'initial · corrupted'; elTag.className = 'sk-tag'; }
+        else if (i === N - 1) { elTag.textContent = '✓ solved · valid'; elTag.className = 'sk-tag done'; }
+        else { elTag.textContent = 'revising…'; elTag.className = 'sk-tag'; }
+        for (var j = 0; j < dotEls.length; j++) dotEls[j].classList.toggle('on', j === i);
+      }
+      function go(i) { idx = (i + N) % N; paint(idx); }
+      function setPlaying(p) {
+        playing = p; playBtn.innerHTML = p ? '❚❚ Pause' : '▶ Play';
+        clearTimeout(timer); if (p) schedule();
+      }
+      function schedule() {
+        clearTimeout(timer);
+        timer = setTimeout(function () { go(idx + 1); if (playing) schedule(); }, idx === N - 1 ? 1900 : 1250);
+      }
+      function loadExample(e) {
+        cur = e; B = EX[e]; SOL = B[B.length - 1]; N = B.length;
+        dots.innerHTML = '';                         // rebuild step dots for this example's length
+        for (var s = 0; s < N; s++) {
+          var d = document.createElement('button');
+          d.className = 'sk-dot'; d.type = 'button'; d.setAttribute('aria-label', 'Go to step ' + s);
+          d.dataset.s = s; dots.appendChild(d);
+        }
+        dotEls = dots.querySelectorAll('.sk-dot');
+        for (var t = 0; t < tabEls.length; t++) tabEls[t].classList.toggle('on', t === e);
+        idx = 0; paint(0); setPlaying(true);
+      }
+
+      playBtn.addEventListener('click', function () { setPlaying(!playing); });
+      document.getElementById('sk-next').addEventListener('click', function () { setPlaying(false); go(idx + 1); });
+      document.getElementById('sk-prev').addEventListener('click', function () { setPlaying(false); go(idx - 1); });
+      document.getElementById('sk-restart').addEventListener('click', function () { go(0); setPlaying(true); });
+      dots.addEventListener('click', function (e) {
+        var t = e.target.closest('.sk-dot'); if (!t) return; setPlaying(false); go(+t.dataset.s);
+      });
+      document.getElementById('sk-tabs').addEventListener('click', function (e) {
+        var t = e.target.closest('.sk-tab'); if (!t) return; var e2 = +t.dataset.ex;
+        if (e2 !== cur) loadExample(e2);
+      });
+
+      loadExample(0);
+    })();
+    </script>
+
+    <div class="table-wrap">
+      <table class="rt">
+        <thead>
+          <tr>
+            <th>Variant</th>
+            <th>Exact Accuracy<br><span class="arr">% &uarr;</span></th>
+            <th>Valid Rate<br><span class="arr">% &uarr;</span></th>
+            <th>Replay Mistake<br><span class="arr">% &darr;</span></th>
+            <th>Conflict Cells<br><span class="arr">/board &darr;</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>RM <span class="cat">(no History Reference)</span></td>
+            <td>82.4</td><td>86.6</td><td>0.57</td><td>0.578</td>
+          </tr>
+          <tr>
+            <td>RM + HR</td>
+            <td>91.4<span class="d">&uarr;9.0</span></td>
+            <td>91.8<span class="d">&uarr;5.2</span></td>
+            <td>0.07<span class="d">&darr;0.50</span></td>
+            <td>0.300<span class="d">&darr;0.278</span></td>
+          </tr>
+          <tr>
+            <td>RM + HR + decay</td>
+            <td>89.4<span class="d">&uarr;7.0</span></td>
+            <td>89.6<span class="d">&uarr;3.0</span></td>
+            <td>0.07<span class="d">&darr;0.50</span></td>
+            <td>0.362<span class="d">&darr;0.216</span></td>
+          </tr>
+          <tr class="ours">
+            <td>Ours &mdash; RM + HR + decay + HER</td>
+            <td><span class="best">93.4</span><span class="d">&uarr;11.0</span></td>
+            <td><span class="best">93.6</span><span class="d">&uarr;7.0</span></td>
+            <td><span class="best">0.03</span><span class="d">&darr;0.54</span></td>
+            <td><span class="best">0.236</span><span class="d">&darr;0.342</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tnote">Quantitative results on Sudoku revision. &Delta; is the change versus the
+      <em>RM (no History Reference)</em> baseline; <b>bold</b> marks the best value per column.</p>
+
+    <hr class="sep" style="margin:30px 0">
+
+    <!-- ---------- Image editing ---------- -->
+    <h3>Image editing &mdash; localized, instruction-guided revision</h3>
+    <p>
+      With a 7B multimodal backbone (Lumina-DiMOO), Reflective Masking localizes the edit and changes
+      only that region, leaving the rest of the image untouched &mdash; outperforming masking-based
+      baselines.
+    </p>
+    <figure>
+      <img src="static/images/results_quality.jpg"
+           alt="Qualitative image-editing comparison across instructions: original, predicted edit mask (ours), our result, and Lumina baselines.">
+      <figcaption>
+        <b>Qualitative image editing.</b> The model predicts where to edit and revises only that
+        region, keeping the rest intact while following the instruction more faithfully than baselines.
+      </figcaption>
+    </figure>
+
+    <hr class="sep" style="margin:30px 0">
+
+    <!-- ---------- Text reasoning ---------- -->
+    <h3>Text reasoning &mdash; self-correction with no answer hints</h3>
+    <p>
+      On open-ended math and code (LLaDA backbone), the model re-masks uncertain intermediate tokens
+      and revises them as context resolves &mdash; beating both the base model and vanilla SFT.
+    </p>
+
+    <figure>
+      <img src="static/images/text_case.png"
+           alt="Text reasoning case study: across denoising steps, the model re-masks and revises tokens, correcting an intermediate wrong answer to produce the correct final answer.">
+      <figcaption>
+        <b>Reflective masking in action.</b> The model re-masks uncertain tokens (M), fixes the
+        chain-of-thought, then revises the final answer &mdash; self-correction by the model itself.
+      </figcaption>
+    </figure>
+
+    <div class="table-wrap">
+      <table class="rt">
+        <thead>
+          <tr>
+            <th>Benchmark</th>
+            <th>Category</th>
+            <th>LLaDA<br><span class="arr">%</span></th>
+            <th>Vanilla SFT<br><span class="arr">%</span></th>
+            <th>Ours (RM)<br><span class="arr">%</span></th>
+            <th>&Delta;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>MATH500</td><td class="cat">Math</td>
+            <td>19.4</td><td>22.4</td><td><span class="best">24.8</span></td>
+            <td><span class="d">&uarr;2.4</span></td>
+          </tr>
+          <tr>
+            <td>MBPP</td><td class="cat">Code</td>
+            <td>28.0</td><td>30.6</td><td><span class="best">39.4</span></td>
+            <td><span class="d">&uarr;8.8</span></td>
+          </tr>
+          <tr>
+            <td>ARC-Challenge</td><td class="cat">MCQA</td>
+            <td>73.7</td><td>81.3</td><td><span class="best">86.1</span></td>
+            <td><span class="d">&uarr;4.8</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tnote">Performance across benchmarks. &Delta; is the improvement over Vanilla SFT;
+      <b>bold</b> marks the best value per row.</p>
+
+    <div class="table-wrap" style="margin-top:24px">
+      <table class="rt">
+        <thead>
+          <tr>
+            <th>Minerva MATH</th>
+            <th>Algebra</th><th>Count.&nbsp;&amp;&nbsp;Prob.</th><th>Geometry</th>
+            <th>Interm.&nbsp;Alg.</th><th>Num&nbsp;Theory</th><th>Prealgebra</th>
+            <th>Precalc</th><th>Aggregate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Vanilla SFT <span class="cat">(%)</span></td>
+            <td>28.90</td><td>17.72</td><td>20.67</td><td>13.07</td><td>17.41</td>
+            <td>36.28</td><td>14.10</td><td>22.62</td>
+          </tr>
+          <tr class="ours">
+            <td>Ours RM <span class="cat">(%)</span></td>
+            <td class="best">29.49</td><td class="best">18.35</td><td class="best">20.67</td>
+            <td class="best">14.40</td><td class="best">21.67</td><td class="best">38.00</td>
+            <td class="best">16.67</td><td class="best">24.10</td>
+          </tr>
+          <tr>
+            <td>&Delta; <span class="cat">(%)</span></td>
+            <td><span class="d">&uarr;0.59</span></td><td><span class="d">&uarr;0.63</span></td>
+            <td>0</td><td><span class="d">&uarr;1.33</span></td><td><span class="d">&uarr;4.26</span></td>
+            <td><span class="d">&uarr;1.72</span></td><td><span class="d">&uarr;2.57</span></td>
+            <td><span class="d">&uarr;1.48</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tnote">Per-subject breakdown on Minerva MATH; Reflective Masking improves on nearly
+      every category.</p>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ======================= METHOD ======================= -->
+  <section id="method">
+    <p class="eyebrow">Method</p>
+    <h2>Reflective Masking &amp; History Reference</h2>
+    <p>
+      Each position takes one of three actions per step: <b>Reveal</b> a confident prediction,
+      <b>Reflectively Mask</b> an uncertain one for another try, or <b>Reserve</b> it. Masking
+      becomes a model-driven decision, so the model can revisit and fix its earlier predictions
+      across turns.
+    </p>
+    <p>
+      <b>History Reference (HER)</b> accumulates per-step states at the embedding level, giving the
+      model access to its own trajectory &mdash; what it predicted and what it already revised &mdash;
+      with no extra parameters and no longer attention sequences.
+    </p>
+    <figure class="plain">
+      <img src="static/images/method_overview.png"
+           alt="Reflective Masking overview: across denoising steps, tokens are Revealed, Reflectively Masked, or Reserved; word-token embeddings (WTE) and History Embedding Rotation (HER) are combined as History Reference before the MDM.">
+      <figcaption>
+        <b>Method overview.</b> At each step every position is <b>Revealed</b>, <b>Reflectively
+        Masked</b>, or <b>Reserved</b>. Word embeddings (WTE) combine with accumulated history via
+        <b>HER</b> before the MDM, so each revision sees the full denoising trajectory.
+      </figcaption>
+    </figure>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ======================= TRAINING ======================= -->
+  <section id="training">
+    <p class="eyebrow">Training</p>
+    <h2>Activating Reflective Masking, offline</h2>
+    <p>
+      RM is taught offline, with no online rollouts. From a clean target we sample a mask, take one
+      MDM forward pass, and draw plausible <em>wrong</em> tokens to build a <b>pseudo-trajectory</b>
+      that matches the model's own distribution. A combined <b>Reveal + RM + Keep</b> loss then
+      teaches when to commit, when to re-mask, and when to leave a token alone.
+    </p>
+    <figure class="plain">
+      <img src="static/images/data_pipeline.png"
+           alt="Offline training data pipeline: sample noisy positions and a mask, run an MDM forward pass, sample wrong tokens, build per-position history, and supervise with Reveal, RM, and Keep losses.">
+      <figcaption>
+        <b>Offline data pipeline.</b> One no-grad forward pass plus sampling builds the
+        pseudo-trajectory; per-position history (correct / mask / wrong) feeds <em>History
+        Reference</em>, supervised by a <b>Reveal&nbsp;+&nbsp;RM&nbsp;+&nbsp;Keep</b> loss.
+      </figcaption>
+    </figure>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ======================= BIBTEX ======================= -->
+  <section id="bibtex">
+    <p class="eyebrow">Citation</p>
+    <h2>BibTeX</h2>
+    <pre><code>@inproceedings{anonymous2026reflective,
+  title     = {Multi-Turn Reflective Masking Elicits Reasoning in Mask Diffusion Models},
+  author    = {Anonymous},
+  booktitle = {Submitted to Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2026},
+  note      = {Under double-blind review}
+}</code></pre>
+  </section>
+
+</main>
+
+<footer>
+  <p>Anonymous submission &middot; under double-blind review. This page describes the paper and
+  contains no author-identifying information.</p>
+</footer>
+
+<script>
+// Copy the BibTeX entry (single source of truth: the #bibtex code block) to the clipboard.
+(function () {
+  var btn = document.getElementById('cite-copy'); if (!btn) return;
+  var label = document.getElementById('cite-label');
+  var src = document.querySelector('#bibtex pre code');
+  function flash(msg, ok) {
+    label.textContent = msg; if (ok) btn.classList.add('copied');
+    setTimeout(function () { label.textContent = 'Copy BibTeX'; btn.classList.remove('copied'); }, 1800);
+  }
+  function legacyCopy(text) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      var ok = document.execCommand('copy'); document.body.removeChild(ta);
+      flash(ok ? '✓ Copied!' : 'Press ⌘/Ctrl+C', ok);
+    } catch (e) { flash('Press ⌘/Ctrl+C', false); }
+  }
+  btn.addEventListener('click', function () {
+    var text = src ? src.innerText : '';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { flash('✓ Copied!', true); },
+        function () { legacyCopy(text); });
+    } else { legacyCopy(text); }
+  });
+})();
+</script>
+
+</body>
 </html>
