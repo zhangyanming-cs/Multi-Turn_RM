@@ -216,6 +216,59 @@
   footer{border-top:1px solid var(--line);padding:26px 20px 40px;text-align:center;
     color:var(--muted);font-size:14px}
 
+  /* ---- interactive image-editing gallery ---- */
+  .img-edit-gallery{margin:16px 0}
+  .gallery-col-hdr{
+    display:grid;gap:3px;margin-bottom:5px;
+    font-size:10.5px;font-weight:700;text-align:center;
+    color:var(--muted);letter-spacing:.04em;text-transform:uppercase;
+  }
+  .gallery-col-hdr.g5{grid-template-columns:148px repeat(5,1fr)}
+  .gallery-col-hdr.g4{grid-template-columns:148px repeat(4,1fr)}
+  .gallery-col-hdr .gh0{text-align:left;padding-left:2px;letter-spacing:0}
+  .gallery-row{display:grid;gap:3px;margin-bottom:3px}
+  .gallery-row.g5{grid-template-columns:148px repeat(5,1fr)}
+  .gallery-row.g4{grid-template-columns:148px repeat(4,1fr)}
+  .gallery-lbl{
+    font-size:11px;font-weight:600;color:var(--ink);
+    display:flex;align-items:center;gap:4px;
+    padding:4px 7px;background:var(--bg-soft);
+    border:1px solid var(--line);border-radius:6px;line-height:1.4;
+    align-self:stretch;
+    overflow:hidden;
+  }
+  .gallery-lbl .lbl-text{
+    flex:1;min-width:0;
+    overflow:hidden;display:-webkit-box;
+    -webkit-box-orient:vertical;-webkit-line-clamp:3;
+  }
+  .gallery-lbl em{color:var(--accent);font-style:italic}
+  .gallery-cell{
+    position:relative;border-radius:4px;
+    border:1px solid var(--line);background:#fff;overflow:hidden;
+  }
+  .gallery-cell img{
+    width:100%;height:100px;object-fit:cover;display:block;
+  }
+  .gallery-cell .gtip{display:none!important} /* data source only */
+  #gal-tip{
+    display:none;position:fixed;z-index:9999;
+    width:260px;max-width:min(280px,90vw);
+    background:rgba(10,12,24,.94);color:#fff;
+    padding:9px 13px;border-radius:9px;
+    font-size:12px;line-height:1.55;font-weight:500;
+    box-shadow:0 4px 20px rgba(0,0,0,.45);
+    pointer-events:none;text-align:left;
+    transform:translate(-50%,calc(-100% - 12px));
+  }
+  .gallery-sep{height:14px}
+  @media(max-width:600px){
+    .gallery-col-hdr.g5,.gallery-row.g5{grid-template-columns:72px repeat(5,1fr)}
+    .gallery-col-hdr.g4,.gallery-row.g4{grid-template-columns:72px repeat(4,1fr)}
+    .gallery-lbl{font-size:9px;padding:3px 4px;-webkit-line-clamp:2}
+    .gallery-cell img{height:64px}
+  }
+
   hr.sep{border:none;border-top:1px solid var(--line);margin:0}
 
   @media (max-width:600px){
@@ -509,12 +562,132 @@
       only that region, leaving the rest of the image untouched &mdash; outperforming masking-based
       baselines.
     </p>
-    <figure>
-      <img src="static/images/results_quality.jpg"
-           alt="Qualitative image-editing comparison across instructions: original, predicted edit mask (ours), our result, and Lumina baselines.">
+    <figure style="margin:22px 0">
+      <div class="img-edit-gallery">
+
+        <!-- ── 5-column section (with Predict Mask) ── -->
+        <div class="gallery-col-hdr g5">
+          <div class="gh0">Instruction</div>
+          <div>Original</div>
+          <div>Predict&nbsp;Mask</div>
+          <div>Ours</div>
+          <div>Lumina</div>
+          <div>Lumina&nbsp;(SFT)</div>
+        </div>
+
+        <!-- Row 1: Turn time into black -->
+        <div class="gallery-row g5">
+          <div class="gallery-lbl" data-tip="Turn time positioned in the right area into black."><span class="lbl-text">Turn <em>time</em> into black&nbsp;&hellip;</span></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image1.png" alt="Original"><div class="gtip">Turn time positioned in the right area into black.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image8.png" alt="Predict Mask"><div class="gtip">Turn time positioned in the right area into black.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image15.png" alt="Ours"><div class="gtip">Turn time positioned in the right area into black.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image28.png" alt="Lumina"><div class="gtip">Turn time positioned in the right area into black.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image21.png" alt="Lumina SFT"><div class="gtip">Turn time positioned in the right area into black.</div></div>
+        </div>
+
+        <!-- Row 2: Add a person in wedding gown -->
+        <div class="gallery-row g5">
+          <div class="gallery-lbl" data-tip="Add a person in an elaborate white wedding gown with lace, veil, and tiara in the upper-middle of the image, occupying roughly half the height and most of the width."><span class="lbl-text">Add a person in <em>wedding gown</em>&nbsp;&hellip;</span></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image2.png" alt="Original"><div class="gtip">Add a person in an elaborate white wedding gown with lace, veil, and tiara in the upper-middle of the image, occupying roughly half the height and most of the width.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image9.png" alt="Predict Mask"><div class="gtip">Add a person in an elaborate white wedding gown with lace, veil, and tiara in the upper-middle of the image, occupying roughly half the height and most of the width.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image16.png" alt="Ours"><div class="gtip">Add a person in an elaborate white wedding gown with lace, veil, and tiara in the upper-middle of the image, occupying roughly half the height and most of the width.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image22.png" alt="Lumina"><div class="gtip">Add a person in an elaborate white wedding gown with lace, veil, and tiara in the upper-middle of the image, occupying roughly half the height and most of the width.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image29.png" alt="Lumina SFT"><div class="gtip">Add a person in an elaborate white wedding gown with lace, veil, and tiara in the upper-middle of the image, occupying roughly half the height and most of the width.</div></div>
+        </div>
+
+        <!-- Row 3: Add a cabin made from wood -->
+        <div class="gallery-row g5">
+          <div class="gallery-lbl" data-tip="Add a modern, minimalist cabin made from light-colored wood with a single door glowing orange, located in the upper-right portion and taking up nearly a quarter of the image."><span class="lbl-text">Add a <em>cabin</em> made from wood&nbsp;&hellip;</span></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image3.png" alt="Original"><div class="gtip">Add a modern, minimalist cabin made from light-colored wood with a single door glowing orange, located in the upper-right portion and taking up nearly a quarter of the image.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image10.png" alt="Predict Mask"><div class="gtip">Add a modern, minimalist cabin made from light-colored wood with a single door glowing orange, located in the upper-right portion and taking up nearly a quarter of the image.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image17.png" alt="Ours"><div class="gtip">Add a modern, minimalist cabin made from light-colored wood with a single door glowing orange, located in the upper-right portion and taking up nearly a quarter of the image.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image23.png" alt="Lumina"><div class="gtip">Add a modern, minimalist cabin made from light-colored wood with a single door glowing orange, located in the upper-right portion and taking up nearly a quarter of the image.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image30.png" alt="Lumina SFT"><div class="gtip">Add a modern, minimalist cabin made from light-colored wood with a single door glowing orange, located in the upper-right portion and taking up nearly a quarter of the image.</div></div>
+        </div>
+
+        <!-- Row 4: Turn cookies into chocolate -->
+        <div class="gallery-row g5">
+          <div class="gallery-lbl" data-tip="Turn cake positioned in the central area into chocolate."><span class="lbl-text">Turn <em>cookies</em> into chocolate&nbsp;&hellip;</span></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image4.png" alt="Original"><div class="gtip">Turn cake positioned in the central area into chocolate.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image11.png" alt="Predict Mask"><div class="gtip">Turn cake positioned in the central area into chocolate.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image35.png" alt="Ours"><div class="gtip">Turn cake positioned in the central area into chocolate.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image24.png" alt="Lumina"><div class="gtip">Turn cake positioned in the central area into chocolate.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image31.png" alt="Lumina SFT"><div class="gtip">Turn cake positioned in the central area into chocolate.</div></div>
+        </div>
+
+        <!-- Row 5: Turn trees on the left into orange -->
+        <div class="gallery-row g5">
+          <div class="gallery-lbl" data-tip="Turn trees positioned on the left side into autumnal orange."><span class="lbl-text">Turn <em>trees</em> on the left into orange&nbsp;&hellip;</span></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image5.png" alt="Original"><div class="gtip">Turn trees positioned on the left side into autumnal orange.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image12.png" alt="Predict Mask"><div class="gtip">Turn trees positioned on the left side into autumnal orange.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image18.png" alt="Ours"><div class="gtip">Turn trees positioned on the left side into autumnal orange.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image25.png" alt="Lumina"><div class="gtip">Turn trees positioned on the left side into autumnal orange.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image32.png" alt="Lumina SFT"><div class="gtip">Turn trees positioned on the left side into autumnal orange.</div></div>
+        </div>
+
+        <!-- Row 6: Add bell-shaped blooms -->
+        <div class="gallery-row g5">
+          <div class="gallery-lbl" data-tip="Add delicate, white bell-shaped blooms with slender green stems in the middle-lower portion of the image, occupying a large area spanning most of the width."><span class="lbl-text">Add <em>bell-shaped</em> blooms</span></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image6.png" alt="Original"><div class="gtip">Add delicate, white bell-shaped blooms with slender green stems in the middle-lower portion of the image, occupying a large area spanning most of the width.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image13.png" alt="Predict Mask"><div class="gtip">Add delicate, white bell-shaped blooms with slender green stems in the middle-lower portion of the image, occupying a large area spanning most of the width.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image19.png" alt="Ours"><div class="gtip">Add delicate, white bell-shaped blooms with slender green stems in the middle-lower portion of the image, occupying a large area spanning most of the width.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image26.png" alt="Lumina"><div class="gtip">Add delicate, white bell-shaped blooms with slender green stems in the middle-lower portion of the image, occupying a large area spanning most of the width.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image33.png" alt="Lumina SFT"><div class="gtip">Add delicate, white bell-shaped blooms with slender green stems in the middle-lower portion of the image, occupying a large area spanning most of the width.</div></div>
+        </div>
+
+        <!-- Row 7: Add creamy filling a spoon -->
+        <div class="gallery-row g5">
+          <div class="gallery-lbl" data-tip="Add a white, creamy substance, likely coconut oil, filling a spoon and partially spilling onto a jar in the center-right-middle of the image, occupying about one-fifth of the area."><span class="lbl-text">Add <em>creamy</em>&nbsp;&hellip; filling a spoon&nbsp;&hellip;</span></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image7.png" alt="Original"><div class="gtip">Add a white, creamy substance, likely coconut oil, filling a spoon and partially spilling onto a jar in the center-right-middle of the image, occupying about one-fifth of the area.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image14.png" alt="Predict Mask"><div class="gtip">Add a white, creamy substance, likely coconut oil, filling a spoon and partially spilling onto a jar in the center-right-middle of the image, occupying about one-fifth of the area.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image20.png" alt="Ours"><div class="gtip">Add a white, creamy substance, likely coconut oil, filling a spoon and partially spilling onto a jar in the center-right-middle of the image, occupying about one-fifth of the area.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image27.png" alt="Lumina"><div class="gtip">Add a white, creamy substance, likely coconut oil, filling a spoon and partially spilling onto a jar in the center-right-middle of the image, occupying about one-fifth of the area.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image34.png" alt="Lumina SFT"><div class="gtip">Add a white, creamy substance, likely coconut oil, filling a spoon and partially spilling onto a jar in the center-right-middle of the image, occupying about one-fifth of the area.</div></div>
+        </div>
+
+        <!-- Row 8: Add cream piled on the top -->
+        <div class="gallery-row g5">
+          <div class="gallery-lbl" data-tip="Add whipped cream piled on top of the French toast stack near the center-upper area of the image, covering about one sixth of the total image area."><span class="lbl-text">Add <em>cream</em> piled on the top&nbsp;&hellip;</span></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image36.png" alt="Original"><div class="gtip">Add whipped cream piled on top of the French toast stack near the center-upper area of the image, covering about one sixth of the total image area.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image37.png" alt="Predict Mask"><div class="gtip">Add whipped cream piled on top of the French toast stack near the center-upper area of the image, covering about one sixth of the total image area.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image38.png" alt="Ours"><div class="gtip">Add whipped cream piled on top of the French toast stack near the center-upper area of the image, covering about one sixth of the total image area.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image39.png" alt="Lumina"><div class="gtip">Add whipped cream piled on top of the French toast stack near the center-upper area of the image, covering about one sixth of the total image area.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image40.png" alt="Lumina SFT"><div class="gtip">Add whipped cream piled on top of the French toast stack near the center-upper area of the image, covering about one sixth of the total image area.</div></div>
+        </div>
+
+        <!-- ── 4-column section (no Predict Mask) ── -->
+        <div class="gallery-sep"></div>
+        <div class="gallery-col-hdr g4">
+          <div class="gh0">Instruction</div>
+          <div>Original</div>
+          <div>Ours</div>
+          <div>Lumina</div>
+          <div>Lumina&nbsp;(SFT)</div>
+        </div>
+
+        <!-- Row 9: Turn the tree into snowy -->
+        <div class="gallery-row g4">
+          <div class="gallery-lbl" data-tip="Turn tree positioned in the right area into snowy."><span class="lbl-text">Turn the <em>tree</em> into snowy&nbsp;&hellip;</span></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image45.png" alt="Original"><div class="gtip">Turn tree positioned in the right area into snowy.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image46.png" alt="Ours"><div class="gtip">Turn tree positioned in the right area into snowy.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image47.png" alt="Lumina"><div class="gtip">Turn tree positioned in the right area into snowy.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image48.png" alt="Lumina SFT"><div class="gtip">Turn tree positioned in the right area into snowy.</div></div>
+        </div>
+
+        <!-- Row 10: Add a Christmas tree in the left -->
+        <div class="gallery-row g4">
+          <div class="gallery-lbl" data-tip="Add a beautifully decorated Christmas tree covered with red, gold, and silver ornaments and sparkling white lights in the left foreground, occupying most of the left and lower-central area."><span class="lbl-text">Add a <em>Christmas tree</em> in the left&nbsp;&hellip;</span></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image41.png" alt="Original"><div class="gtip">Add a beautifully decorated Christmas tree covered with red, gold, and silver ornaments and sparkling white lights in the left foreground, occupying most of the left and lower-central area.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image42.png" alt="Ours"><div class="gtip">Add a beautifully decorated Christmas tree covered with red, gold, and silver ornaments and sparkling white lights in the left foreground, occupying most of the left and lower-central area.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image43.png" alt="Lumina"><div class="gtip">Add a beautifully decorated Christmas tree covered with red, gold, and silver ornaments and sparkling white lights in the left foreground, occupying most of the left and lower-central area.</div></div>
+          <div class="gallery-cell"><img src="static/Imageedit/media/image44.png" alt="Lumina SFT"><div class="gtip">Add a beautifully decorated Christmas tree covered with red, gold, and silver ornaments and sparkling white lights in the left foreground, occupying most of the left and lower-central area.</div></div>
+        </div>
+
+      </div><!-- /.img-edit-gallery -->
       <figcaption>
         <b>Qualitative image editing.</b> The model predicts where to edit and revises only that
-        region, keeping the rest intact while following the instruction more faithfully than baselines.
+        region, keeping the rest intact while following the instruction more faithfully than
+        baselines. <em>Hover over any image to see the full editing instruction.</em>
       </figcaption>
     </figure>
 
@@ -679,6 +852,27 @@
 </footer>
 
 <script>
+// Image-gallery tooltip — hover over instruction label to see full prompt
+(function(){
+  var tip = document.createElement('div');
+  tip.id = 'gal-tip';
+  document.body.appendChild(tip);
+
+  document.querySelectorAll('.gallery-lbl[data-tip]').forEach(function(lbl){
+    lbl.addEventListener('mouseenter', function(e){
+      tip.textContent = lbl.dataset.tip;
+      tip.style.display = 'block';
+      tip.style.left = e.clientX + 'px';
+      tip.style.top  = e.clientY + 'px';
+    });
+    lbl.addEventListener('mousemove', function(e){
+      tip.style.left = e.clientX + 'px';
+      tip.style.top  = e.clientY + 'px';
+    });
+    lbl.addEventListener('mouseleave', function(){ tip.style.display = 'none'; });
+  });
+})();
+
 // Copy the BibTeX entry (single source of truth: the #bibtex code block) to the clipboard.
 (function () {
   var btn = document.getElementById('cite-copy'); if (!btn) return;
