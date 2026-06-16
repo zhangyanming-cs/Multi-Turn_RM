@@ -109,6 +109,14 @@
   }
   .tldr strong{color:var(--accent)}
 
+  /* ---- comparison callout ---- */
+  .callout{border:1px solid #cdddfb;border-left:4px solid var(--accent);
+    border-radius:10px;padding:15px 20px;background:var(--accent-soft);margin:18px 0 4px}
+  .callout p{margin:0;font-size:15.5px;line-height:1.6}
+  .callout b.k{color:var(--accent)}
+  .callout .hl{font-weight:700;color:var(--ink)}
+  .callout .src{margin-top:9px;font-size:12.5px;color:var(--muted);line-height:1.5}
+
   /* ---- contributions ---- */
   ul.contrib{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:14px}
   ul.contrib li{
@@ -122,6 +130,15 @@
     font-size:14px;font-weight:700;display:grid;place-items:center;
   }
   ul.contrib li b{font-weight:680}
+
+  /* ---- training loss list ---- */
+  ul.losses{list-style:none;padding:0;margin:18px 0 4px;display:grid;gap:10px}
+  ul.losses li{border:1px solid var(--line);border-radius:10px;padding:13px 16px;background:#fff;
+    display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+  ul.losses .ln{font-weight:700;color:var(--accent);min-width:96px}
+  ul.losses .lx{color:var(--muted)}
+  ul.losses .lx b{color:var(--ink);font-weight:680}
+  ul.losses .ar{color:var(--accent);font-weight:700;margin:0 5px}
 
   /* ---- figures ---- */
   figure{margin:22px 0;text-align:center}
@@ -293,13 +310,27 @@
 <header class="hero">
   <div class="venue">Preprint &middot; 2026</div>
   <h1>Multi-Turn Reflective Masking Elicits Reasoning in Mask Diffusion Models</h1>
-  <div class="authors">Anonymous Authors</div>
-  <div class="affil">Preprint &middot; 2026</div>
+  <div class="authors">
+    Yanming Zhang<sup>1,&lowast;</sup>,
+    Yihan Bian<sup>1,&lowast;</sup>,
+    Jingyuan Qi<sup>2</sup>,
+    Yuguang Yao<sup>3</sup>,
+    Lifu Huang<sup>4</sup>,
+    Tianyi Zhou<sup>5</sup>
+  </div>
+  <div class="affil">
+    <sup>1</sup>University of Maryland &nbsp;&middot;&nbsp;
+    <sup>2</sup>Virginia Tech &nbsp;&middot;&nbsp;
+    <sup>3</sup>Intuit &nbsp;&middot;&nbsp;
+    <sup>4</sup>UC Davis &nbsp;&middot;&nbsp;
+    <sup>5</sup>MBZUAI
+    <br><span style="font-size:13.5px"><sup>&lowast;</sup>Equal contribution</span>
+  </div>
 
-  <!-- Resource links. Placeholders for now:
-       replace each href="#" with the real URL once available. -->
+  <!-- Resource links. arXiv is live; Hugging Face is still a placeholder
+       (replace href="#" with the real URL once available). -->
   <div class="links">
-    <a class="btn alt" id="link-arxiv" href="#"><span class="ico">&#128196;</span> arXiv</a>
+    <a class="btn alt" id="link-arxiv" href="https://arxiv.org/abs/2606.16700" target="_blank" rel="noopener noreferrer"><span class="ico">&#128196;</span> arXiv</a>
     <a class="btn alt" id="link-code" href="https://github.com/zhangyanming-cs/RM" target="_blank" rel="noopener noreferrer"><span class="ico">&lt;/&gt;</span> Code</a>
     <a class="btn alt" id="link-hf" href="#"><span class="ico">&#129303;</span> Hugging Face</a>
     <button class="btn" id="cite-copy" type="button"><span class="ico">&#128203;</span> <span id="cite-label">Copy BibTeX</span></button>
@@ -313,15 +344,19 @@
     <p class="eyebrow">Abstract</p>
     <div class="abstract">
       <p>
-        Autoregressive models can refine an answer only by regenerating forward &mdash; even a
-        one-token fix means redoing the whole sequence. <b>Mask Diffusion Models (MDMs)</b> can
-        instead edit <em>in place</em>, yet existing MDMs never exploit this for multi-turn revision.
-        We propose <b>Reflective Masking (RM)</b>, a lightweight post-training method that unlocks this
-        intrinsic ability: the model re-masks its own uncertain tokens and revises them across turns
-        &mdash; a native form of test-time scaling, with no architectural changes. We further add
-        <b>History Reference</b>, a parameter-free mechanism that carries the denoising trajectory
-        across revisions. Across text, Sudoku, and image editing, RM consistently beats standard
-        masking-based baselines, positioning it as a basic primitive for reasoning in MDMs.
+        Recent diffusion language models &mdash; such as Google's
+        <a href="https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/" target="_blank" rel="noopener noreferrer"><b>DiffusionGemma</b></a> &mdash; show
+        that text generation need not be left-to-right: a model can refine a whole canvas using
+        bidirectional context. We ask a complementary question: can <em>existing</em>
+        <b>Mask Diffusion Models (MDMs)</b> be taught to reason by revising their own previous
+        outputs? We propose <b>Reflective Masking (RM)</b>, a lightweight post-training method that
+        turns masking into a model-driven decision &mdash; keep reliable tokens, re-mask uncertain
+        ones, and reveal better replacements &mdash; making an MDM a multi-turn reviser rather than a
+        one-shot decoder. To support multi-turn correction we add <b>History Reference</b>, a
+        parameter-free memory that exposes the denoising trajectory to the model. Unlike a large
+        pretrained diffusion LM, RM needs no architectural changes and no online rollouts, and drops
+        into existing MDMs across <b>Sudoku, text reasoning, and image editing</b> &mdash; enabling
+        sparse, iterative self-revision.
       </p>
     </div>
   </section>
@@ -330,25 +365,23 @@
   <section id="tldr">
     <div class="tldr">
       <p style="margin:0">
-        <strong>TL;DR.</strong> Autoregressive models can only revise by regenerating forward;
-        mask diffusion models can edit <em>in place</em> &mdash; but standard decoding fixes a token
-        once it is revealed and forgets what it previously predicted. <b>Reflective Masking</b>
-        teaches an MDM to re-mask its own uncertain tokens and revise them over multiple turns, and
-        <b>History Reference</b> lets it carry the denoising trajectory forward &mdash; both with
-        <b>no architectural changes and no extra parameters</b>.
+        <strong>TL;DR &mdash; Reasoning by editing, not regenerating.</strong> Reflective Masking
+        turns a Mask Diffusion Model into a multi-turn reviser: it erases uncertain tokens,
+        regenerates only what is needed, and remembers previous attempts.
       </p>
     </div>
 
     <ul class="contrib">
-      <li><span class="n">1</span><b>Reflective Masking as a latent capability.</b> We recast MDM
-        generation as self-initiated, in-place revision &mdash; reasoning by editing prior outputs,
-        not just expanding forward.</li>
-      <li><span class="n">2</span><b>A lightweight training paradigm.</b> A scalable offline data
-        pipeline activates RM as an intrinsic skill, with no architectural changes &mdash; validated
-        on text, Sudoku, and image editing.</li>
-      <li><span class="n">3</span><b>History Reference.</b> A parameter-free way to give MDMs a
-        stateful view of their denoising trajectory, improving consistency and avoiding repeated
-        errors.</li>
+      <li><span class="n">1</span><b>Re-masking is the self-correction MDMs were missing.</b> MDMs
+        can edit in place but never <em>choose</em> to &mdash; so they lock in early mistakes. RM
+        makes masking a model-driven decision (keep reliable tokens, re-mask uncertain ones, reveal
+        better replacements), so the model fixes its own errors instead of carrying them forward.</li>
+      <li><span class="n">2</span><b>A lightweight post-training recipe &mdash; no new architecture.</b>
+        RM is activated by a scalable offline data pipeline (no online rollouts) and drops into
+        existing MDMs unchanged &mdash; validated across text, Sudoku, and image editing.</li>
+      <li><span class="n">3</span><b>History Reference &mdash; a memory of past attempts, for free.</b>
+        A parameter-free mechanism that carries the denoising trajectory forward, so the model
+        remembers what it already tried and stops repeating the same error.</li>
     </ul>
   </section>
 
@@ -552,6 +585,21 @@
     </div>
     <p class="tnote">Quantitative results on Sudoku revision. &Delta; is the change versus the
       <em>RM (no History Reference)</em> baseline; <b>bold</b> marks the best value per column.</p>
+
+    <div class="callout">
+      <p>
+        <b class="k">Relation to DiffusionGemma (Google).</b> DiffusionGemma independently validates
+        reasoning-by-revision on Sudoku: per its model card, exact-solve rises from
+        <span class="hl">18% one-shot &rarr; 89.5%</span> purely by revising over steps, and from
+        <span class="hl">1.5% &rarr; 89.5%</span> after fine-tuning a large pretrained model for
+        4,000 steps. Reflective Masking reaches an even higher <span class="hl">93.4% exact
+        accuracy with a 0.81M-parameter MDM trained from scratch</span> &mdash; orders of magnitude
+        smaller than DiffusionGemma's fine-tuned backbone &mdash; and extends the same revision
+        mechanism beyond text to <span class="hl">image editing</span>, a modality DiffusionGemma
+        does not support.
+      </p>
+      <p class="src">DiffusionGemma: Google, &ldquo;<a href="https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/" target="_blank" rel="noopener noreferrer">DiffusionGemma: 4&times; faster text generation</a>&rdquo; (2026); Sudoku numbers from the fine-tuned model card (Unsloth).</p>
+    </div>
 
     <hr class="sep" style="margin:30px 0">
 
@@ -816,9 +864,14 @@
     <p>
       RM is taught offline, with no online rollouts. From a clean target we sample a mask, take one
       MDM forward pass, and draw plausible <em>wrong</em> tokens to build a <b>pseudo-trajectory</b>
-      that matches the model's own distribution. A combined <b>Reveal + RM + Keep</b> loss then
-      teaches when to commit, when to re-mask, and when to leave a token alone.
+      that matches the model's own distribution. Three per-token losses then teach when to commit,
+      when to re-mask, and when to leave a token alone:
     </p>
+    <ul class="losses">
+      <li><span class="ln">Reveal</span><span class="lx">masked token <span class="ar">&rarr;</span> <b>correct token</b></span></li>
+      <li><span class="ln">Re-mask</span><span class="lx">wrong visible token <span class="ar">&rarr;</span> <b>MASK</b></span></li>
+      <li><span class="ln">Keep</span><span class="lx">correct visible token <span class="ar">&rarr;</span> <b>itself</b></span></li>
+    </ul>
     <figure class="plain">
       <img src="static/images/data_pipeline.png"
            alt="Offline training data pipeline: sample noisy positions and a mask, run an MDM forward pass, sample wrong tokens, build per-position history, and supervise with Reveal, RM, and Keep losses.">
@@ -836,19 +889,22 @@
   <section id="bibtex">
     <p class="eyebrow">Citation</p>
     <h2>BibTeX</h2>
-    <pre><code>@misc{anonymous2026reflective,
-  title     = {Multi-Turn Reflective Masking Elicits Reasoning in Mask Diffusion Models},
-  author    = {Anonymous},
-  year      = {2026},
-  note      = {Preprint}
+    <pre><code>@misc{zhang2026multiturn,
+  title         = {Multi-Turn Reflective Masking Elicits Reasoning in Mask Diffusion Models},
+  author        = {Zhang, Yanming and Bian, Yihan and Qi, Jingyuan and Yao, Yuguang and Huang, Lifu and Zhou, Tianyi},
+  year          = {2026},
+  eprint        = {2606.16700},
+  archivePrefix = {arXiv},
+  url           = {https://arxiv.org/abs/2606.16700}
 }</code></pre>
   </section>
 
 </main>
 
 <footer>
-  <p>Anonymous preprint. This page describes the paper and
-  contains no author-identifying information.</p>
+  <p>Project page for the paper. See the
+  <a href="https://arxiv.org/abs/2606.16700" target="_blank" rel="noopener noreferrer">arXiv preprint</a>
+  for full details.</p>
 </footer>
 
 <script>
