@@ -242,10 +242,12 @@
   }
   .gallery-col-hdr.g5{grid-template-columns:148px repeat(5,1fr)}
   .gallery-col-hdr.g4{grid-template-columns:148px repeat(4,1fr)}
+  .gallery-col-hdr.g3s{grid-template-columns:212px repeat(3,1fr)}
   .gallery-col-hdr .gh0{text-align:left;padding-left:2px;letter-spacing:0}
   .gallery-row{display:grid;gap:3px;margin-bottom:3px}
   .gallery-row.g5{grid-template-columns:148px repeat(5,1fr)}
   .gallery-row.g4{grid-template-columns:148px repeat(4,1fr)}
+  .gallery-row.g3s{grid-template-columns:212px repeat(3,1fr);align-items:stretch}
   .gallery-lbl{
     font-size:11px;font-weight:600;color:var(--ink);
     display:flex;align-items:center;gap:4px;
@@ -257,17 +259,60 @@
   .gallery-lbl .lbl-text{
     flex:1;min-width:0;
     overflow:hidden;display:-webkit-box;
-    -webkit-box-orient:vertical;-webkit-line-clamp:3;
+    -webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;
   }
   .gallery-lbl em{color:var(--accent);font-style:italic}
+  /* instruction cell that also carries the original/input image */
+  .gallery-lbl.with-input{
+    flex-direction:column;align-items:stretch;justify-content:flex-start;
+    gap:7px;padding:9px 10px;font-size:12px;
+  }
+  .gallery-lbl.with-input .lbl-text{
+    flex:0 0 auto;-webkit-line-clamp:3;line-clamp:3;line-height:1.5;
+    text-align:center;width:100%;margin-top:auto;
+  }
+  /* input image: centred, sitting a little low, leaving the text room above */
+  .gallery-lbl .lbl-input{
+    width:100%;max-width:184px;align-self:center;
+    aspect-ratio:3/2;height:auto;object-fit:cover;display:block;cursor:zoom-in;
+    margin:auto auto 4px;
+    border:1px solid var(--line);border-radius:4px;background:#fff;
+  }
   .gallery-cell{
     position:relative;border-radius:4px;
     border:1px solid var(--line);background:#fff;overflow:hidden;
   }
   .gallery-cell img{
-    width:100%;height:100px;object-fit:cover;display:block;
+    width:100%;height:100px;object-fit:cover;display:block;cursor:zoom-in;
+  }
+  /* a cell that stacks two images (edited result on top, depth below) */
+  .gallery-cell.pair{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    border:none;background:none;border-radius:0;overflow:visible;
+  }
+  .gallery-cell.pair img{
+    width:100%;max-width:230px;aspect-ratio:3/2;height:auto;object-fit:cover;
+    border:1px solid var(--line);border-radius:4px;background:#fff;
   }
   .gallery-cell .gtip{display:none!important} /* data source only */
+  /* full-resolution lightbox (click any gallery image) */
+  #gal-lb{
+    display:none;position:fixed;inset:0;z-index:10000;
+    background:rgba(8,10,20,.9);
+    align-items:center;justify-content:center;
+    padding:24px;cursor:zoom-out;
+  }
+  #gal-lb.open{display:flex}
+  #gal-lb img{
+    max-width:96vw;max-height:90vh;width:auto;height:auto;
+    object-fit:contain;border-radius:8px;background:#fff;
+    box-shadow:0 10px 50px rgba(0,0,0,.6);cursor:zoom-out;
+  }
+  #gal-lb .gal-lb-cap{
+    position:absolute;left:24px;right:24px;bottom:18px;
+    text-align:center;color:#e6e9f2;font-size:13px;line-height:1.5;
+    letter-spacing:.01em;text-shadow:0 1px 3px rgba(0,0,0,.6);
+  }
   #gal-tip{
     display:none;position:fixed;z-index:9999;
     width:260px;max-width:min(280px,90vw);
@@ -282,8 +327,11 @@
   @media(max-width:600px){
     .gallery-col-hdr.g5,.gallery-row.g5{grid-template-columns:72px repeat(5,1fr)}
     .gallery-col-hdr.g4,.gallery-row.g4{grid-template-columns:72px repeat(4,1fr)}
-    .gallery-lbl{font-size:9px;padding:3px 4px;-webkit-line-clamp:2}
+    .gallery-col-hdr.g3s,.gallery-row.g3s{grid-template-columns:108px repeat(3,1fr)}
+    .gallery-lbl{font-size:9px;padding:3px 4px;-webkit-line-clamp:2;line-clamp:2}
     .gallery-cell img{height:64px}
+    .gallery-cell.pair img,.gallery-lbl .lbl-input{height:auto;max-width:none}
+    .gallery-lbl.with-input{font-size:9px;padding:4px}
   }
 
   hr.sep{border:none;border-top:1px solid var(--line);margin:0}
@@ -703,39 +751,43 @@
           <div class="gallery-cell"><img src="static/Imageedit/media/image40.png" alt="Lumina SFT"><div class="gtip">Add whipped cream piled on top of the French toast stack near the center-upper area of the image, covering about one sixth of the total image area.</div></div>
         </div>
 
-        <!-- ── 4-column section (no Predict Mask) ── -->
+        <!-- ── result + depth section (input shown under the instruction) ── -->
         <div class="gallery-sep"></div>
-        <div class="gallery-col-hdr g4">
-          <div class="gh0">Instruction</div>
-          <div>Original</div>
+        <div class="gallery-col-hdr g3s">
+          <div class="gh0">Instruction &amp; input</div>
           <div>Ours</div>
           <div>Lumina</div>
           <div>Lumina&nbsp;(SFT)</div>
         </div>
 
-        <!-- Row 9: Turn the tree into snowy -->
-        <div class="gallery-row g4">
-          <div class="gallery-lbl" data-tip="Turn tree positioned in the right area into snowy."><span class="lbl-text">Turn the <em>tree</em> into snowy&nbsp;&hellip;</span></div>
-          <div class="gallery-cell"><img src="static/Imageedit/media/image45.png" alt="Original"><div class="gtip">Turn tree positioned in the right area into snowy.</div></div>
-          <div class="gallery-cell"><img src="static/Imageedit/media/image46.png" alt="Ours"><div class="gtip">Turn tree positioned in the right area into snowy.</div></div>
-          <div class="gallery-cell"><img src="static/Imageedit/media/image47.png" alt="Lumina"><div class="gtip">Turn tree positioned in the right area into snowy.</div></div>
-          <div class="gallery-cell"><img src="static/Imageedit/media/image48.png" alt="Lumina SFT"><div class="gtip">Turn tree positioned in the right area into snowy.</div></div>
-        </div>
-
-        <!-- Row 10: Add a Christmas tree in the left -->
-        <div class="gallery-row g4">
-          <div class="gallery-lbl" data-tip="Add a beautifully decorated Christmas tree covered with red, gold, and silver ornaments and sparkling white lights in the left foreground, occupying most of the left and lower-central area."><span class="lbl-text">Add a <em>Christmas tree</em> in the left&nbsp;&hellip;</span></div>
-          <div class="gallery-cell"><img src="static/Imageedit/media/image41.png" alt="Original"><div class="gtip">Add a beautifully decorated Christmas tree covered with red, gold, and silver ornaments and sparkling white lights in the left foreground, occupying most of the left and lower-central area.</div></div>
-          <div class="gallery-cell"><img src="static/Imageedit/media/image42.png" alt="Ours"><div class="gtip">Add a beautifully decorated Christmas tree covered with red, gold, and silver ornaments and sparkling white lights in the left foreground, occupying most of the left and lower-central area.</div></div>
-          <div class="gallery-cell"><img src="static/Imageedit/media/image43.png" alt="Lumina"><div class="gtip">Add a beautifully decorated Christmas tree covered with red, gold, and silver ornaments and sparkling white lights in the left foreground, occupying most of the left and lower-central area.</div></div>
-          <div class="gallery-cell"><img src="static/Imageedit/media/image44.png" alt="Lumina SFT"><div class="gtip">Add a beautifully decorated Christmas tree covered with red, gold, and silver ornaments and sparkling white lights in the left foreground, occupying most of the left and lower-central area.</div></div>
+        <!-- Row: Turn the tree into snowy — each method shows result (top) + depth (bottom) -->
+        <div class="gallery-row g3s">
+          <div class="gallery-lbl with-input" data-tip="Turn tree positioned in the right area into snowy.">
+            <span class="lbl-text">Turn the <em>tree</em> into snowy&nbsp;&hellip;</span>
+            <img class="lbl-input" src="static/Imageedit/media/image42.png" alt="Input — original image">
+          </div>
+          <div class="gallery-cell pair">
+            <img src="static/Imageedit/media/image41.png" alt="Ours — edited result">
+            <img src="static/Imageedit/media/image45.png" alt="Ours — depth">
+          </div>
+          <div class="gallery-cell pair">
+            <img src="static/Imageedit/media/image43.png" alt="Lumina — edited result">
+            <img src="static/Imageedit/media/image46.png" alt="Lumina — depth">
+          </div>
+          <div class="gallery-cell pair">
+            <img src="static/Imageedit/media/image44.png" alt="Lumina (SFT) — edited result">
+            <img src="static/Imageedit/media/image48.png" alt="Lumina (SFT) — depth">
+          </div>
         </div>
 
       </div><!-- /.img-edit-gallery -->
       <figcaption>
         <b>Qualitative image editing.</b> The model predicts where to edit and revises only that
         region, keeping the rest intact while following the instruction more faithfully than
-        baselines. <em>Hover over any image to see the full editing instruction.</em>
+        baselines. In the last row the <b>input</b> sits under its instruction and each method shows
+        the <b>edited result</b> (top) over the predicted <b>depth/edit region</b> (bottom).
+        <em>Hover an instruction label for the full prompt, or click any image to view it at full
+        resolution.</em>
       </figcaption>
     </figure>
 
@@ -927,6 +979,33 @@
     });
     lbl.addEventListener('mouseleave', function(){ tip.style.display = 'none'; });
   });
+})();
+
+// Click any gallery image to view it at full resolution in a lightbox
+(function(){
+  var lb = document.createElement('div');
+  lb.id = 'gal-lb';
+  lb.innerHTML = '<img alt=""><div class="gal-lb-cap"></div>';
+  document.body.appendChild(lb);
+  var lbImg = lb.querySelector('img');
+  var lbCap = lb.querySelector('.gal-lb-cap');
+
+  function close(){ lb.classList.remove('open'); lbImg.removeAttribute('src'); }
+
+  document.querySelectorAll('.gallery-cell img, .gallery-lbl .lbl-input').forEach(function(img){
+    img.addEventListener('click', function(){
+      var row = img.closest('.gallery-row');
+      var lbl = row ? row.querySelector('.gallery-lbl') : null;
+      var instr = lbl && lbl.dataset.tip ? lbl.dataset.tip : '';
+      lbImg.src = img.currentSrc || img.src;
+      lbImg.alt = img.alt || '';
+      lbCap.textContent = (img.alt ? img.alt : '') + (img.alt && instr ? '  ·  ' : '') + instr;
+      lb.classList.add('open');
+    });
+  });
+
+  lb.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
 })();
 
 // Copy the BibTeX entry (single source of truth: the #bibtex code block) to the clipboard.
