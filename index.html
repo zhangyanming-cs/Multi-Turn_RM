@@ -109,6 +109,13 @@
   }
   .tldr strong{color:var(--accent)}
 
+  /* ---- pull-quote tagline ---- */
+  .pquote{max-width:640px;margin:30px auto 6px;text-align:center}
+  .pquote .pq{margin:0;font-size:23px;line-height:1.35;font-weight:750;letter-spacing:-.01em}
+  .pquote .pq .b{color:var(--accent)}
+  .pquote .pq-sub{margin:9px 0 0;font-size:14px;color:var(--muted);font-style:italic;font-weight:500}
+  @media (max-width:600px){.pquote .pq{font-size:19px}}
+
   /* ---- comparison callout ---- */
   .callout{border:1px solid #cdddfb;border-left:4px solid var(--accent);
     border-radius:10px;padding:15px 20px;background:var(--accent-soft);margin:18px 0 4px}
@@ -172,6 +179,17 @@
   table.rt .d{margin-left:5px;font-size:12px;font-weight:600;color:var(--good);white-space:nowrap}
   table.rt .cat{color:var(--muted);font-size:12.5px;font-weight:500}
   .tnote{font-size:13.5px;color:var(--muted);margin:8px 0 0}
+
+  /* ---- AR vs RM comparison table ---- */
+  table.cmp{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px}
+  table.cmp th{font-weight:700;padding:10px 14px;border-bottom:2px solid #cdd2d9;
+    text-align:left;vertical-align:bottom}
+  table.cmp td{padding:10px 14px;border-bottom:1px solid var(--line);
+    text-align:left;vertical-align:top;line-height:1.5}
+  table.cmp tr:last-child td{border-bottom:2px solid #cdd2d9}
+  table.cmp th:last-child,table.cmp td:last-child{background:var(--accent-soft)}
+  table.cmp th:last-child{color:var(--accent)}
+  table.cmp td:first-child{color:var(--muted)}
 
   /* ---- sudoku animated figure ---- */
   figure.sudoku-fig{margin:22px 0}
@@ -408,6 +426,12 @@
       </p>
     </div>
   </section>
+
+  <!-- ======================= PULL-QUOTE TAGLINE ======================= -->
+  <div class="pquote">
+    <p class="pq">CoT thinks by continuing. <span class="b">RM thinks by revising.</span></p>
+    <p class="pq-sub">A diffusion-native analogue of chain-of-thought reflection.</p>
+  </div>
 
   <!-- ======================= TL;DR ======================= -->
   <section id="tldr">
@@ -799,6 +823,14 @@
       On open-ended math and code (LLaDA backbone), the model re-masks uncertain intermediate tokens
       and revises them as context resolves &mdash; beating both the base model and vanilla SFT.
     </p>
+    <p>
+      <b>A diffusion-native analogue of reflection.</b> Chain-of-thought and reflection let
+      autoregressive models reason by <em>writing more</em> &mdash; appending a new trace and carrying
+      every past mistake along in the context. Reflective Masking gives MDMs the complementary move:
+      reason by <em>revising</em>. Rather than append a fresh reasoning trace, the model edits its
+      previous state, re-masking only the tokens it now doubts so wrong steps are erased instead of
+      accumulated.
+    </p>
 
     <figure>
       <img src="static/images/text_case.png"
@@ -877,6 +909,32 @@
     </div>
     <p class="tnote">Per-subject breakdown on Minerva MATH; Reflective Masking improves on nearly
       every category.</p>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ============= ANALOGY (AR reasoning bridge) ============= -->
+  <section id="analogy">
+    <p class="eyebrow">Perspective</p>
+    <h2>How RM relates to AR reasoning</h2>
+    <p style="text-align:center;color:var(--muted);max-width:640px;margin:0 auto 6px">
+      Most readers know chain-of-thought and reflection; RM is the same instinct expressed in an
+      MDM's native operation &mdash; editing rather than appending.
+    </p>
+    <div class="table-wrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>AR reasoning / reflection</th><th>Reflective Masking in MDMs</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Generates thoughts left-to-right</td><td>Revises a full canvas bidirectionally</td></tr>
+          <tr><td>Corrects mistakes by appending more text or regenerating</td><td>Corrects mistakes by re-masking only unreliable tokens</td></tr>
+          <tr><td>Past mistakes remain in context</td><td>Wrong tokens can be erased from the current state</td></tr>
+          <tr><td>Test-time scaling = longer traces / more samples</td><td>Test-time scaling = more rounds of selective revision</td></tr>
+          <tr><td>Memory is textual context</td><td>Memory is History Reference over denoising states</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <hr class="sep">
