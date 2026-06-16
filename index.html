@@ -405,6 +405,17 @@
 
 <main class="wrap">
 
+  <!-- ======================= TL;DR (first) ======================= -->
+  <section id="tldr">
+    <div class="tldr">
+      <p style="margin:0">
+        <strong>TL;DR &mdash; Reasoning by editing, not regenerating.</strong> Reflective Masking
+        turns a Mask Diffusion Model into a multi-turn reviser: it erases uncertain tokens,
+        regenerates only what is needed, and remembers previous attempts.
+      </p>
+    </div>
+  </section>
+
   <!-- ======================= ABSTRACT ======================= -->
   <section id="abstract">
     <p class="eyebrow">Abstract</p>
@@ -427,22 +438,8 @@
     </div>
   </section>
 
-  <!-- ======================= PULL-QUOTE TAGLINE ======================= -->
-  <div class="pquote">
-    <p class="pq">CoT thinks by continuing. <span class="b">RM thinks by revising.</span></p>
-    <p class="pq-sub">A diffusion-native analogue of chain-of-thought reflection.</p>
-  </div>
-
-  <!-- ======================= TL;DR ======================= -->
-  <section id="tldr">
-    <div class="tldr">
-      <p style="margin:0">
-        <strong>TL;DR &mdash; Reasoning by editing, not regenerating.</strong> Reflective Masking
-        turns a Mask Diffusion Model into a multi-turn reviser: it erases uncertain tokens,
-        regenerates only what is needed, and remembers previous attempts.
-      </p>
-    </div>
-
+  <!-- ======================= CONTRIBUTIONS (3 novelty) ======================= -->
+  <section id="contributions">
     <ul class="contrib">
       <li><span class="n">1</span><b>Re-masking is the self-correction MDMs were missing.</b> MDMs
         can edit in place but never <em>choose</em> to &mdash; so they lock in early mistakes. RM
@@ -455,6 +452,36 @@
         A parameter-free mechanism that carries the denoising trajectory forward, so the model
         remembers what it already tried and stops repeating the same error.</li>
     </ul>
+  </section>
+
+  <!-- ======================= PULL-QUOTE TAGLINE ======================= -->
+  <div class="pquote">
+    <p class="pq">CoT thinks by continuing. <span class="b">RM thinks by revising.</span></p>
+    <p class="pq-sub">A diffusion-native analogue of chain-of-thought reflection.</p>
+  </div>
+
+  <!-- ======================= SIDE-BY-SIDE: AR vs RM ======================= -->
+  <section id="analogy">
+    <p class="eyebrow">Perspective</p>
+    <h2>Side-by-side: AR Reasoning vs. Reflective Masking Reasoning</h2>
+    <p style="text-align:center;color:var(--muted);max-width:640px;margin:0 auto 6px">
+      Most readers know chain-of-thought and reflection; RM is the same instinct expressed in an
+      MDM's native operation &mdash; editing rather than appending.
+    </p>
+    <div class="table-wrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>AR reasoning / reflection</th><th>Reflective Masking in MDMs</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Generates thoughts left-to-right</td><td>Revises a full canvas bidirectionally</td></tr>
+          <tr><td>Corrects mistakes by appending more text or regenerating</td><td>Corrects mistakes by re-masking only unreliable tokens</td></tr>
+          <tr><td>Past mistakes remain in context</td><td>Wrong tokens can be erased from the current state</td></tr>
+          <tr><td>Test-time scaling = longer traces / more samples</td><td>Test-time scaling = more rounds of selective revision</td></tr>
+          <tr><td>Memory is textual context</td><td>Memory is History Reference over denoising states</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <hr class="sep">
@@ -909,32 +936,6 @@
     </div>
     <p class="tnote">Per-subject breakdown on Minerva MATH; Reflective Masking improves on nearly
       every category.</p>
-  </section>
-
-  <hr class="sep">
-
-  <!-- ============= ANALOGY (AR reasoning bridge) ============= -->
-  <section id="analogy">
-    <p class="eyebrow">Perspective</p>
-    <h2>How RM relates to AR reasoning</h2>
-    <p style="text-align:center;color:var(--muted);max-width:640px;margin:0 auto 6px">
-      Most readers know chain-of-thought and reflection; RM is the same instinct expressed in an
-      MDM's native operation &mdash; editing rather than appending.
-    </p>
-    <div class="table-wrap">
-      <table class="cmp">
-        <thead>
-          <tr><th>AR reasoning / reflection</th><th>Reflective Masking in MDMs</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Generates thoughts left-to-right</td><td>Revises a full canvas bidirectionally</td></tr>
-          <tr><td>Corrects mistakes by appending more text or regenerating</td><td>Corrects mistakes by re-masking only unreliable tokens</td></tr>
-          <tr><td>Past mistakes remain in context</td><td>Wrong tokens can be erased from the current state</td></tr>
-          <tr><td>Test-time scaling = longer traces / more samples</td><td>Test-time scaling = more rounds of selective revision</td></tr>
-          <tr><td>Memory is textual context</td><td>Memory is History Reference over denoising states</td></tr>
-        </tbody>
-      </table>
-    </div>
   </section>
 
   <hr class="sep">
